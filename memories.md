@@ -1,4 +1,7 @@
 
+# Saturday 21  46 18 a las 17:46:20 
+ blanca es tonta
+
 # Saturday 21  45 18 a las 17:45:37 
  pues menos mal que no te he revelado mis oscuros secretos, porque mira en realidad soy HETERO
 
