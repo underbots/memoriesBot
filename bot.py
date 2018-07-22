@@ -1,5 +1,6 @@
 from telegram.ext import Updater, CommandHandler, MessageHandler, ConversationHandler , Filters
 import time as t
+import csv
 
 from _configure import TOKEN
 from git_update import git_update
@@ -11,6 +12,7 @@ from git_update import git_update
 WRITING , W1 = range(2) #
 FILE = 'memories.md'
 DIR = 'media/'
+UDF = 'user_data.csv' # user data file, name
 
 # Messages
 HELP = """Hello, here you can store your more relevant (at least for you) memories, any kind of feelings.
@@ -29,6 +31,27 @@ Please tell me whatever you want, I am an open book"""
 END_W = """Reading you has been a pleasure!"""
 #########################  basic calls#########################
 
+def setup (bot , update ):
+   """
+   Create or upload de user informatión a redstribute to his count
+   user_data.csv;  structure: id, first name , username  
+"""
+   user_id = update.message.from_user.id
+   first_name = update.message.from_user.first_name
+   user_name = update.message.from_user.username
+
+   with open(UDF, 'a', newline='') as csvfile: # cambio w por a
+    fieldnames = ['id', 'first name' , 'username' ]
+    writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
+
+    writer.writeheader()
+    writer.writerow({'id': user_id, 'first name': first_name , 'username': user_name})
+
+    writer.close()
+
+   print (f""" Usuario {user_name} detectado:
+Hola , {first_name}, espero no haberte asustado, su id es {user_id}""")
+   
 def help_ms(bot , update):
    """ string -> void
 """
@@ -109,7 +132,7 @@ def  main():
    updater = Updater(TOKEN) 
    
    # my calls 
-   updater.dispatcher.add_handler(CommandHandler("start", help_ms))
+   updater.dispatcher.add_handler(CommandHandler("start", setup ))
    updater.dispatcher.add_handler(CommandHandler('help', help_ms))
    updater.dispatcher.add_handler(CommandHandler('git', git ))
    
