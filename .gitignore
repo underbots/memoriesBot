@@ -1,6 +1,9 @@
 # my ignores
 _configure.py
 *~
+user_data.csv
+media/*
+text/*
 
 # Byte-compiled / optimized / DLL files
 __pycache__/

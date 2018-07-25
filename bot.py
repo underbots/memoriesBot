@@ -1,6 +1,7 @@
 from telegram.ext import Updater, CommandHandler, MessageHandler, ConversationHandler , Filters
 import time as t
 import csv
+import pandas as pd 
 
 from _configure import TOKEN
 from git_update import git_update
@@ -11,7 +12,9 @@ from git_update import git_update
 # fUNTION NECESITIES
 WRITING , W1 = range(2) #
 FILE = 'memories.md'
-DIR = 'media/'
+DIR_PHOTO = 'media/'
+DIR_TEXT = 'texts/'
+
 UDF = 'user_data.csv' # user data file, name
 
 # Messages
@@ -29,6 +32,7 @@ START = """Oh dear, I look forward to hearing from you :) ESTO ES CREEPY PERO BU
 Please tell me whatever you want, I am an open book"""
 
 END_W = """Reading you has been a pleasure!"""
+
 #########################  basic calls#########################
 
 def setup (bot , update ):
@@ -40,20 +44,28 @@ def setup (bot , update ):
    first_name = update.message.from_user.first_name
    user_name = update.message.from_user.username
 
-   with open(UDF, 'a', newline='') as csvfile: # cambio w por a
-    fieldnames = ['id', 'first name' , 'username' ]
-    writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
-
-    writer.writeheader()
-    writer.writerow({'id': user_id, 'first name': first_name , 'username': user_name})
-
-    writer.close()
-
-   print (f""" Usuario {user_name} detectado:
-Hola , {first_name}, espero no haberte asustado, su id es {user_id}""")
+   data = pd.read_cvs(UDF)
+   if data['id'] != user_id:
+      with open(UDF, 'a', newline='') as csvfile: # cambio w por a
+         fieldnames = ['id', 'first name' , 'username' ]
+         writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
+         #writer.writeheader()
+         writer.writerow({'id': user_id, 'first name': first_name , 'username': user_name})
+      
+      writer.close()
+      print(f""" Usuario {user_name} detectado:
+         Hola , {first_name}, espero no haberte asustado, su id es {user_id}""")
+      update.message.reply_text(f""" Usuario {user_name} detectado:
+         Hola , {first_name}, espero no haberte asustado, su id es {user_id}""")
+   else:
+      print(f""" Usuario {user_name} detectado:
+         Hola , {first_name}, espero no haberte asustado, su id es {user_id}""")
+      update.message.reply_text( f""" Hola , {first_name},veo que ya nos conocemos, espero no haberte asustado, su id es {user_id}""" )
+      
    
 def help_ms(bot , update):
    """ string -> void
+   Show help message
 """
    update.message.reply_text(HELP)
 
