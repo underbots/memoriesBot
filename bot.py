@@ -11,7 +11,7 @@ from git_update import git_update
 ########################### global variables#################################
 # fUNTION NECESITIES
 WRITING , W1 = range(2) #
-FILE = 'memories.md'
+# FILE = 'memories.md'
 DIR_PHOTO = 'media/'
 DIR_TEXT = 'texts/'
 
@@ -33,7 +33,7 @@ Please tell me whatever you want, I am an open book"""
 
 END_W = """Reading you has been a pleasure!"""
 
-#########################  basic calls#########################
+#########################  basic calls #########################
 
 def setup (bot , update ):
    """
@@ -43,24 +43,23 @@ def setup (bot , update ):
    user_id = update.message.from_user.id
    first_name = update.message.from_user.first_name
    user_name = update.message.from_user.username
+   
+   data = pd.read_csv(UDF)
 
-   data = pd.read_cvs(UDF)
-   if data['id'] != user_id:
+   # check if is a new user, in this case create it count   
+   if not True in list(data['id'] == user_id):
+      # add to list
       with open(UDF, 'a', newline='') as csvfile: # cambio w por a
          fieldnames = ['id', 'first name' , 'username' ]
          writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
          #writer.writeheader()
          writer.writerow({'id': user_id, 'first name': first_name , 'username': user_name})
-      
-      writer.close()
-      print(f""" Usuario {user_name} detectado:
-         Hola , {first_name}, espero no haberte asustado, su id es {user_id}""")
-      update.message.reply_text(f""" Usuario {user_name} detectado:
-         Hola , {first_name}, espero no haberte asustado, su id es {user_id}""")
+         #writer.close())
+      #create its file
+      update.message.reply_text(f""" I see it is your first time here {first_name}, I am going to give you an introduction:
+{HELP}""")
    else:
-      print(f""" Usuario {user_name} detectado:
-         Hola , {first_name}, espero no haberte asustado, su id es {user_id}""")
-      update.message.reply_text( f""" Hola , {first_name},veo que ya nos conocemos, espero no haberte asustado, su id es {user_id}""" )
+      update.message.reply_text( f""" Hello , {first_name} is a pleasure to see you again""" )
       
    
 def help_ms(bot , update):
@@ -75,6 +74,8 @@ def start( bot , update ):
     #file management # AÑADIR CONTROL DE LA FECHA
     global DATA
     global modified
+    FILE = str(update.message.from_user.username)+'.md'
+
     with open(FILE , 'r') as original:
        DATA = original.read()
     original.close()
@@ -111,7 +112,7 @@ def photo (bot , update):
    photo = update.message.photo[-1]
    # Preguntar por el nombre de la foto y modificar (interactive_tools.py)
    name = t.strftime('%y-%m-%d_%a_%H_%M_%S')
-   path =  DIR+ name
+   path =  DIR+name
    #gestión de carpetas
    
    file_id = photo.file_id
@@ -136,7 +137,8 @@ def my_finish (bot , update):
 
 def git ( bot , update ):
    """ update to git """
-   git_update( f"Diario del día {t.strftime('%y-%m-%d_%a_%H_%M_%S')}" )
+   update.message.reply_text('Subido a git con éxito (suponiendo que no lo tuvieras como comentario) ') 
+   #git_update( f"Diario del día {t.strftime('%y-%m-%d_%a_%H_%M_%S')}" )
  
 ######################## main #####################################
 def  main():
