@@ -1,7 +1,9 @@
 from telegram.ext import Updater, CommandHandler, MessageHandler, ConversationHandler , Filters
 import time as t
 import csv
-import pandas as pd 
+import pandas as pd
+
+import os
 
 from _configure import TOKEN
 from git_update import git_update
@@ -12,8 +14,8 @@ from git_update import git_update
 # fUNTION NECESITIES
 WRITING , W1 = range(2) #
 # FILE = 'memories.md'
-DIR_PHOTO = 'media/'
-DIR_TEXT = 'texts/'
+DIR_PHOTO ='media/'
+DIR_TEXT ='texts/'
 
 UDF = 'user_data.csv' # user data file, name
 
@@ -36,8 +38,7 @@ END_W = """Reading you has been a pleasure!"""
 #########################  basic calls #########################
 
 def setup (bot , update ):
-   """
-   Create or upload de user informatión a redstribute to his count
+   """Create or upload de user informatión a redstribute to his count
    user_data.csv;  structure: id, first name , username  
 """
    user_id = update.message.from_user.id
@@ -49,6 +50,7 @@ def setup (bot , update ):
    # check if is a new user, in this case create it count   
    if not True in list(data['id'] == user_id):
       # add to list
+      os.system( f'touch {user_name}')
       with open(UDF, 'a', newline='') as csvfile: # cambio w por a
          fieldnames = ['id', 'first name' , 'username' ]
          writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
@@ -76,14 +78,15 @@ def start( bot , update ):
     global modified
     FILE = str(update.message.from_user.username)+'.md'
 
+    print(f'Procedamso a ver si se puede abrir el archivo {FILE}')
     with open(FILE , 'r') as original:
        DATA = original.read()
+    print('se ha abierto el archivo')
     original.close()
 
     modified = open( FILE , 'w')
-    modified.write(f'\n# {t.strftime("%A")} {t.strftime("%d")}  {t.strftime("%M")} {t.strftime("%y")} a las {t.strftime("%H:%M:%S")} \n ' ) # Imprimo la fecha t.strftime('%y-%m-%d_%a_%H_%M_%S')
+    modified.write(f'\n# {t.strftime("%A")} {t.strftime("%d")}  {t.strftime("%m")} {t.strftime("%y")} a las {t.strftime("%H:%M:%S")} \n ' ) # Imprimo la fecha t.strftime('%y-%m-%d_%a_%H_%M_%S')
 
-    
     update.message.reply_text(START)
     
     return WRITING
@@ -137,8 +140,9 @@ def my_finish (bot , update):
 
 def git ( bot , update ):
    """ update to git """
-   update.message.reply_text('Subido a git con éxito (suponiendo que no lo tuvieras como comentario) ') 
-   #git_update( f"Diario del día {t.strftime('%y-%m-%d_%a_%H_%M_%S')}" )
+   update.message.reply_text('Subido a git con éxito (suponiendo que no lo tuvieras como comentario) '
+) 
+   git_update( f"Diario del día {t.strftime('%y-%m-%d_%a_%H_%M_%S')}", add=f'{update.message.from_user.username}.md', path='~/repositorios/BlancaCC.github.io/' )
  
 ######################## main #####################################
 def  main():
